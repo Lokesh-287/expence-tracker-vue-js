@@ -1,8 +1,9 @@
 <script setup>
-import {ref,computed} from 'vue'
+import {ref,computed,onMounted,onUnmounted} from 'vue'
 
 const text=ref("");
 const amount= ref(0);
+const textInput=ref(null);
 const emit = defineEmits(["send-transaction",])
 
 const isIncome = computed({
@@ -12,6 +13,25 @@ const isIncome = computed({
     set(value) {
         amount.value = value ? Math.abs(amount.value) : -Math.abs(amount.value)
     }
+})
+
+function focusOnKeyN(event){
+    const tag = event.target?.tagName
+    const alreadyTyping = tag === 'INPUT' || tag === 'TEXTAREA'
+    if (alreadyTyping) return
+    if (event.key === 'n') {
+        event.preventDefault()
+        textInput.value?.focus()
+    }
+}
+
+onMounted(() => {
+    textInput.value?.focus()
+    window.addEventListener('keydown', focusOnKeyN)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', focusOnKeyN)
 })
 
 function sendTransaction(){
@@ -42,7 +62,7 @@ function sendTransaction(){
         <form class="form" @submit.prevent="sendTransaction">
             <div class="field">
                 <h2 class="field__label">Text</h2>
-                <input class="field__input" v-model="text" type="text" placeholder="Enter Text">
+                <input class="field__input" ref="textInput" v-model="text" type="text" placeholder="Enter Text">
             </div>
 
             <div class="field">
