@@ -1,9 +1,18 @@
 <script setup>
-import {ref} from 'vue'
+import {ref,computed} from 'vue'
 
 const text=ref("");
 const amount= ref(0);
 const emit = defineEmits(["send-transaction",])
+
+const isIncome = computed({
+    get() {
+        return amount.value >= 0
+    },
+    set(value) {
+        amount.value = value ? Math.abs(amount.value) : -Math.abs(amount.value)
+    }
+})
 
 function sendTransaction(){
     if (!text.value.trim() && !amount.value){
@@ -41,6 +50,11 @@ function sendTransaction(){
                 <p class="field__hint">Negative for expence, positive for income</p>
                 <input class="field__input" v-model.number = "amount" type="number" placeholder="Enter the amount here ">
             </div>
+
+            <label class="toggle">
+                <input type="checkbox" v-model="isIncome">
+                {{ isIncome ? 'This is income' : 'This is an expense' }}
+            </label>
 
             <button class="submit" type="submit">Add transaction</button>
         </form>
@@ -105,6 +119,23 @@ function sendTransaction(){
     background-color: #ffffff;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
 }
 
 .submit {
