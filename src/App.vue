@@ -1,5 +1,5 @@
 <script setup>
-import {ref,reactive,computed,watch,watchEffect,onErrorCaptured} from 'vue'
+import {ref,reactive,computed,watch,watchEffect,onErrorCaptured,nextTick} from 'vue'
 import Header  from './components/header.vue';
 import Balance from './components/balance.vue';
 import IncomeExpence from './components/incomeExpence.vue';
@@ -30,9 +30,13 @@ watchEffect(() => {
 })
 
 const errorMessage = ref('');
+const errorBanner = ref(null);
 
 onErrorCaptured((error) => {
   errorMessage.value = error.message
+  nextTick(() => {
+    errorBanner.value?.focus()
+  })
   return false
 })
 
@@ -61,9 +65,9 @@ function addTransaction(transaction){
 <template>
 
   <div class="page">
-    <p v-if="errorMessage" role="alert">
+    <p v-if="errorMessage" ref="errorBanner" class="error-banner" role="alert" tabindex="-1">
       {{ errorMessage }}
-      <button type="button" @click="errorMessage = ''">Dismiss</button>
+      <button type="button" class="error-banner__dismiss" @click="errorMessage = ''">Dismiss</button>
     </p>
 
     <Header/>
@@ -74,3 +78,37 @@ function addTransaction(transaction){
   </div>
 
 </template>
+
+<style scoped>
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background-color: var(--expence);
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error-banner:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.error-banner__dismiss {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--expence);
+  background-color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+</style>
