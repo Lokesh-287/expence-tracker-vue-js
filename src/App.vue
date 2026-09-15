@@ -1,15 +1,26 @@
 <script setup>
-import {ref,reactive} from 'vue'
+import {ref,reactive,computed} from 'vue'
 import Header  from './components/header.vue';
 import Balance from './components/balance.vue';
 import IncomeExpence from './components/incomeExpence.vue';
 import Transaction from './components/Transaction.vue';
 import History from './components/History.vue';
 
-let balance = ref(0);
-let income = ref(0);
-let expence = ref(0);
-let history = reactive([])
+const balance = ref(0);
+// const income = ref(0);
+const income = computed(()=>
+history
+.filter(item=>item.isIncome)
+.reduce((sum,item)=>sum+item.amount,0)
+)
+// const expence = ref(0);
+const expence = computed(()=>
+history
+.filter(item=>item.isIncome)
+.reduce((sum,item)=>sum+item.amount,0)
+)
+const history = reactive([])
+
 
 function addTransaction(transaction){
   if(transaction.amount===0){
@@ -21,7 +32,6 @@ function addTransaction(transaction){
       amount:transaction.amount,
       isIncome:true
     })
-    update_income(transaction.amount)
   }
   else{
     history.push({
@@ -29,21 +39,8 @@ function addTransaction(transaction){
       amount:transaction.amount,
       isIncome:false
     })
-    update_expence(transaction.amount)
   }
-  
 }
-
-function update_income(amount){
-  income.value+=amount
-  balance.value+=(amount)
-}
-
-function update_expence(amount){
-  expence.value+=amount
-  balance.value+=(amount)
-}
-
 </script>
 
 
