@@ -6,6 +6,16 @@ const amount= ref(0);
 const emit = defineEmits(["send-transaction",])
 
 function sendTransaction(){
+    if (!text.value.trim() && !amount.value){
+        throw new Error('Please enter description and amount for the transaction')
+    }
+    if (!text.value.trim()) {
+        throw new Error('Please enter a description for the transaction.')
+    }
+    if (!amount.value) {
+        throw new Error('Please enter an amount that is not zero.')
+    }
+
     emit("send-transaction",{
         text:text.value,
         amount:amount.value}

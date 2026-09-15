@@ -1,5 +1,5 @@
 <script setup>
-import {ref,reactive,computed,watch,watchEffect} from 'vue'
+import {ref,reactive,computed,watch,watchEffect,onErrorCaptured} from 'vue'
 import Header  from './components/header.vue';
 import Balance from './components/balance.vue';
 import IncomeExpence from './components/incomeExpence.vue';
@@ -29,6 +29,13 @@ watchEffect(() => {
   document.title = `₹${balance.value} · Expence Tracker`
 })
 
+const errorMessage = ref('');
+
+onErrorCaptured((error) => {
+  errorMessage.value = error.message
+  return false
+})
+
 function addTransaction(transaction){
   if(transaction.amount===0){
     return
@@ -54,6 +61,11 @@ function addTransaction(transaction){
 <template>
 
   <div class="page">
+    <p v-if="errorMessage" role="alert">
+      {{ errorMessage }}
+      <button type="button" @click="errorMessage = ''">Dismiss</button>
+    </p>
+
     <Header/>
     <Balance :balance="balance"/>
     <IncomeExpence :income="income" :expence="expence"/>
