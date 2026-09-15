@@ -1,5 +1,5 @@
 <script setup>
-import {ref,reactive,computed} from 'vue'
+import {ref,reactive,computed,watch,watchEffect} from 'vue'
 import Header  from './components/header.vue';
 import Balance from './components/balance.vue';
 import IncomeExpence from './components/incomeExpence.vue';
@@ -19,8 +19,15 @@ history
 .filter(item=>item.isIncome)
 .reduce((sum,item)=>sum+item.amount,0)
 )
-const history = reactive([])
+const saved = localStorage.getItem('history');
+const history = reactive(saved ? JSON.parse(saved) : [])
+watch(history, (value) => {
+  localStorage.setItem('history', JSON.stringify(value))
+}, { deep: true })
 
+watchEffect(() => {
+  document.title = `₹${balance.value} · Expence Tracker`
+})
 
 function addTransaction(transaction){
   if(transaction.amount===0){
