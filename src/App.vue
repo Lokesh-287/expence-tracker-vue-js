@@ -6,19 +6,17 @@ import IncomeExpence from './components/incomeExpence.vue';
 import Transaction from './components/Transaction.vue';
 import History from './components/History.vue';
 
-const balance = ref(0);
-// const income = ref(0);
 const income = computed(()=>
 history
 .filter(item=>item.isIncome)
 .reduce((sum,item)=>sum+item.amount,0)
 )
-// const expence = ref(0);
 const expence = computed(()=>
 history
-.filter(item=>item.isIncome)
+.filter(item=>!item.isIncome)
 .reduce((sum,item)=>sum+item.amount,0)
 )
+const balance = computed(()=> income.value + expence.value)
 const saved = localStorage.getItem('history');
 const history = reactive(saved ? JSON.parse(saved) : [])
 watch(history, (value) => {
